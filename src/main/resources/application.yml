@@ -1,0 +1,12 @@
+naver:
+  search:
+    client-id:
+    client-secret:
+    break-count: 1000
+    request-delay-ms : 300
+
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG
