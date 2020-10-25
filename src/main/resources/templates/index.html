@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+          integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <title>Hello, world!</title>
+    <style>
+        html,
+        body {
+            overflow-x: hidden; /* Prevent scroll on narrow devices */
+        }
+
+        body {
+            padding-top: 56px;
+        }
+
+        @media (max-width: 991.98px) {
+            .offcanvas-collapse {
+                position: fixed;
+                top: 56px; /* Height of navbar */
+                bottom: 0;
+                left: 100%;
+                width: 100%;
+                padding-right: 1rem;
+                padding-left: 1rem;
+                overflow-y: auto;
+                visibility: hidden;
+                background-color: #343a40;
+                transition: visibility .3s ease-in-out, -webkit-transform .3s ease-in-out;
+                transition: transform .3s ease-in-out, visibility .3s ease-in-out;
+                transition: transform .3s ease-in-out, visibility .3s ease-in-out, -webkit-transform .3s ease-in-out;
+            }
+
+            .offcanvas-collapse.open {
+                visibility: visible;
+                -webkit-transform: translateX(-100%);
+                transform: translateX(-100%);
+            }
+        }
+
+        .nav-scroller {
+            position: relative;
+            z-index: 2;
+            height: 2.75rem;
+            overflow-y: hidden;
+        }
+
+        .nav-scroller .nav {
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-wrap: nowrap;
+            flex-wrap: nowrap;
+            padding-bottom: 1rem;
+            margin-top: -1px;
+            overflow-x: auto;
+            color: rgba(255, 255, 255, .75);
+            text-align: center;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-underline .nav-link {
+            padding-top: .75rem;
+            padding-bottom: .75rem;
+            font-size: .875rem;
+            color: #6c757d;
+        }
+
+        .nav-underline .nav-link:hover {
+            color: #007bff;
+        }
+
+        .nav-underline .active {
+            font-weight: 500;
+            color: #343a40;
+        }
+
+        .text-white-50 {
+            color: rgba(255, 255, 255, .5);
+        }
+
+        .bg-purple {
+            background-color: #6f42c1;
+        }
+
+        .lh-100 {
+            line-height: 1;
+        }
+
+        .lh-125 {
+            line-height: 1.25;
+        }
+
+        .lh-150 {
+            line-height: 1.5;
+        }
+
+
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="row">
+    <div class="col-md-10 order-md-1">
+        <div class="col-md-6 mb-3">
+            <label for="keyword">Keyword</label>
+            <input type="text" class="form-control" id="keyword" placeholder="키워드 입력" value="" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="url">URL</label>
+            <input type="text" class="form-control" id="url" placeholder="URL 입력" value="" required>
+        </div>
+        <div class="col-md-5 mb-3">
+            <button class="btn btn-primary btn-lg" id="search" type="submit">검색</button>
+        </div>
+    </div>
+</div>
+<h2>검색 결과</h2>
+<div class="table-responsive">
+    <table class="table table-striped table-sm">
+        <thead>
+        <tr>
+            <th>삭제</th>
+            <th>이미지</th>
+            <th>상품 개수</th>
+            <th>검색순위</th>
+            <th>카테고리</th>
+            <th>상품명</th>
+            <th>판매가</th>
+            <th>리뷰수</th>
+            <th>설명</th>
+            <th>태그</th>
+        </tr>
+        </thead>
+        <tbody id="search-result-body">
+
+        </tbody>
+    </table>
+</div>
+<!--<template id="search-result-template">-->
+<!--    <tr>-->
+<!--    </tr>-->
+<!--</template>-->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
+        crossorigin="anonymous"></script>
+
+<script>
+    $(function () {
+        'use strict'
+
+        $('[data-toggle="offcanvas"]').on('click', function () {
+            $('.offcanvas-collapse').toggleClass('open')
+        })
+    })
+
+    let $keyword = document.getElementById("keyword")
+    $keyword.addEventListener("keydown",(event) => {
+        if (event.which === 13) {
+            $search.click()
+        }
+    })
+    let $url = document.getElementById("url")
+    $url.addEventListener("keydown",(event) => {
+        if (event.which === 13) {
+            $search.click()
+        }
+    })
+    let $search = document.getElementById("search")
+    $search.addEventListener("click", (event) => {
+        let $keyword = document.getElementById("keyword")
+        let $url = document.getElementById("url")
+        let keyword = $keyword.value.trim()
+        let url = $url.value.trim()
+        if (!url && !keyword) {
+            alert("URL 또는 키워드를 입력해주세요.")
+            $keyword.focus()
+            return
+        }
+        if (url && !keyword) {
+            alert("키워드를 입력해주세요.")
+            $keyword.focus()
+            return
+        }
+
+        let api = `http://localhost:8080/api/v1/smart-store/shops/items/${keyword}`
+        if (url) {
+            api += `?url=${url}`
+        }
+        let search = document.getElementById("search")
+        search.textContent = "조회중..."
+        fetch(api)
+            .then(response => response.json())
+            .then(data => {
+                let tbody = document.getElementById("search-result-body")
+                let tr = document.createElement("tr")
+
+                // 삭제
+                let remove = document.createElement("td")
+                remove.textContent = "[X]"
+                tr.appendChild(remove)
+
+                // 이미지
+                let image = document.createElement("td")
+
+                let imageTag = document.createElement("img")
+                imageTag.style.display = "block"
+                let imageUrl = data["image"].substring(0, data["image"].lastIndexOf("?"))
+                if (!imageUrl) {
+                    imageTag.style.width = "150px"
+                    imageTag.src = data["image"]
+                } else {
+                    imageTag.src = imageUrl += "?type=m310"
+                }
+                image.appendChild(imageTag)
+
+                let link = document.createElement("a")
+                if (data["link"] === "링크를 가져오는데 실패했습니다.") {
+                    link.textContent = data["link"]
+                } else {
+                    link.textContent = "페이지로 이동"
+                    link.href = data["link"]
+                    link.target = "_blank"
+                }
+
+                image.appendChild(link)
+                tr.appendChild(image)
+
+                // 상품개수
+                let total = document.createElement("td")
+                total.textContent = data["total"]
+                tr.appendChild(total)
+
+                // 검색순위
+                let rankingPage = document.createElement("td")
+                rankingPage.textContent = `${data["page"]}페이지 ${data["ranking"]}번째`
+                tr.appendChild(rankingPage)
+
+                // 카테고리
+                let category = document.createElement("td")
+                category.textContent = data["category"]
+                tr.appendChild(category)
+
+                // 상품명
+                let title = document.createElement("td")
+                title.textContent = data["title"]
+                tr.appendChild(title)
+
+                // 가격
+                let price = document.createElement("td")
+                if (data["highestPrice"]) {
+                    price.textContent = `최저가 : ${data["price"]} 최고가 : ${data["highestPrice"]}`
+                } else {
+                    price.textContent = data["price"]
+                }
+                tr.appendChild(price)
+
+                // 리뷰수
+                let reviewCount = document.createElement("td")
+                reviewCount.textContent = data["reviewCount"]
+                tr.appendChild(reviewCount)
+
+                // 설명
+                let description = document.createElement("td")
+                description.textContent = data["description"]
+                tr.appendChild(description)
+
+                // 태그
+                let tags = document.createElement("td")
+                tags.textContent = data["tags"]
+                tr.appendChild(tags)
+
+                tbody.appendChild(tr)
+                search.textContent = "검색"
+            })
+    })
+
+</script>
+</body>
+</html>
