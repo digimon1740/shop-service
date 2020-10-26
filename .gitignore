@@ -35,3 +35,5 @@ out/
 
 ### Mac OS
 .DS_Store
+
+application-dev.yml

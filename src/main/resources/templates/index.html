@@ -175,13 +175,13 @@
     })
 
     let $keyword = document.getElementById("keyword")
-    $keyword.addEventListener("keydown",(event) => {
+    $keyword.addEventListener("keydown", (event) => {
         if (event.which === 13) {
             $search.click()
         }
     })
     let $url = document.getElementById("url")
-    $url.addEventListener("keydown",(event) => {
+    $url.addEventListener("keydown", (event) => {
         if (event.which === 13) {
             $search.click()
         }
@@ -190,8 +190,8 @@
     $search.addEventListener("click", (event) => {
         let $keyword = document.getElementById("keyword")
         let $url = document.getElementById("url")
-        let keyword = $keyword.value.trim()
-        let url = $url.value.trim()
+        let keyword = encodeURIComponent($keyword.value.trim().replace(/ /gi, ""))
+        let url = encodeURIComponent($url.value.trim().replace(/ /gi, ""))
         if (!url && !keyword) {
             alert("URL 또는 키워드를 입력해주세요.")
             $keyword.focus()
@@ -208,10 +208,14 @@
             api += `?url=${url}`
         }
         let search = document.getElementById("search")
+        search.disabled = true
         search.textContent = "조회중..."
         fetch(api)
             .then(response => response.json())
             .then(data => {
+                search.textContent = "검색"
+                search.disabled = false
+
                 let tbody = document.getElementById("search-result-body")
                 let tr = document.createElement("tr")
 
@@ -253,7 +257,11 @@
 
                 // 검색순위
                 let rankingPage = document.createElement("td")
-                rankingPage.textContent = `${data["page"]}페이지 ${data["ranking"]}번째`
+                if (data["page"] && data["ranking"]) {
+                    rankingPage.textContent = `${data["page"]}페이지 ${data["ranking"]}번째`
+                } else {
+                    rankingPage.textContent = "1000+"
+                }
                 tr.appendChild(rankingPage)
 
                 // 카테고리
@@ -291,8 +299,13 @@
                 tr.appendChild(tags)
 
                 tbody.appendChild(tr)
-                search.textContent = "검색"
             })
+            .catch((err) => {
+                console.log(err)
+                search.textContent = "검색"
+                search.disabled = false
+                alert("서버 에러가 발생하였습니다.")
+        })
     })
 
 </script>

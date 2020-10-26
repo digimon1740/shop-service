@@ -32,6 +32,7 @@ class SmartStoreController(
         const val TAG_ERROR = "태그를 가져오는데 실패했습니다."
         const val LINK_ERROR = "링크를 가져오는데 실패했습니다."
         const val DESCRIPTION_ERROR = "설명을 가져오는데 실패했습니다."
+        const val CATEGORY_ERROR = "카테고리를 가져오는데 실패했습니다."
     }
 
     val webClient by lazy { webClientBuilder.build() }
@@ -80,6 +81,9 @@ class SmartStoreController(
 
             if (finished) break
         }
+        if (url.isNotBlank() && value == null) {
+            value = mapOf("fallbackLink" to url)
+        }
         return responseEntity(value, apiResponse.total, page, ranking - 1)
     }
 
@@ -112,7 +116,7 @@ class SmartStoreController(
         }
     }
 
-    private fun getMetadata(link: String): Map<String, String> {
+    private fun getMetadata(link: String?): Map<String, String> {
         val doc = try {
             Jsoup.connect(link).timeout(TIME_OUT_MILLIS).get()
         } catch (e: Exception) {
@@ -164,14 +168,25 @@ class SmartStoreController(
         return mapOf("title" to title, "image" to image, "description" to description, "reviewCount" to reviewCount, "tags" to tags)
     }
 
+    fun getCategoryAfterConcat(item: Map<String, String>) =
+        if (!item["category1"].isNullOrBlank()
+            && !item["category2"].isNullOrBlank()
+            && !item["category3"].isNullOrBlank()
+            && !item["category4"].isNullOrBlank()) {
+            "${item["category1"]}>${item["category2"]}>${item["category3"]}>${item["category4"]}"
+        } else {
+            CATEGORY_ERROR
+        }
+
     private fun responseEntity(item: Map<String, String>?, total: Int?, page: Int = 1, ranking: Int = 1) =
-        if (item.isNullOrEmpty() || total == null) {
+        if (item == null) {
             ResponseEntity.notFound().build()
         } else {
             val highestPrice = item["hprice"]
             val lowestPrice = item["lprice"]
-            val link = getRealLink(item["link"])
-            val category = "${item["category1"]}>${item["category2"]}>${item["category3"]}>${item["category4"]}"
+            val link = if (item["fallbackLink"].isNullOrBlank()) getRealLink(item["link"]) else item["fallbackLink"]
+            val category = getCategoryAfterConcat(item)
+
             val response = if ((highestPrice == null || highestPrice.toInt() == 0)) {
                 val metadata = getMetadata(link)
                 SmartStoreSearchResponse(
@@ -184,8 +199,8 @@ class SmartStoreController(
                     description = metadata["description"],
                     reviewCount = metadata["reviewCount"],
                     tags = metadata["tags"],
-                    page = page,
-                    ranking = ranking,
+                    page = if (item["fallbackLink"].isNullOrBlank()) page else 0,
+                    ranking = if (item["fallbackLink"].isNullOrBlank()) ranking else 0,
                 )
             } else {
                 SmartStoreSearchResponse(
