@@ -168,15 +168,25 @@ class SmartStoreController(
         return mapOf("title" to title, "image" to image, "description" to description, "reviewCount" to reviewCount, "tags" to tags)
     }
 
-    fun getCategoryAfterConcat(item: Map<String, String>) =
-        if (!item["category1"].isNullOrBlank()
-            && !item["category2"].isNullOrBlank()
-            && !item["category3"].isNullOrBlank()
-            && !item["category4"].isNullOrBlank()) {
-            "${item["category1"]}>${item["category2"]}>${item["category3"]}>${item["category4"]}"
-        } else {
-            CATEGORY_ERROR
+    fun getCategoryAfterConcat(item: Map<String, String>): String {
+        var catetory = ""
+        if (!item["category1"].isNullOrBlank()) {
+            catetory = "${item["category1"]}"
         }
+        if (!item["category2"].isNullOrBlank()) {
+            catetory += ">${item["category2"]}"
+        }
+        if (!item["category3"].isNullOrBlank()) {
+            catetory += ">${item["category3"]}"
+        }
+        if (!item["category4"].isNullOrBlank()) {
+            catetory += ">${item["category4"]}"
+        }
+        if (catetory.isBlank()) {
+            catetory = CATEGORY_ERROR
+        }
+        return catetory
+    }
 
     private fun responseEntity(item: Map<String, String>?, total: Int?, page: Int = 1, ranking: Int = 1) =
         if (item == null) {
